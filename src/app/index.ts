@@ -224,18 +224,36 @@
                     action: (params: any) => this.updatePackages(params)
                 })
 
-                // 'link' command - link package globally
+                // 'link' command - link package globally OR link global package to project
                 .command({
                     name            : 'link',
-                    description     : 'Link package globally for development',
-                    action          : () => this.linkPackage()
+                    description     : 'Link package globally (no args) or link global package to project (with package name)',
+                    
+                    args: [
+                        {
+                            name        : 'package',
+                            required    : false,
+                            description : 'Package name to link from global (optional)'
+                        }
+                    ],
+                    
+                    action: (params: any) => this.linkPackage(params)
                 })
 
-                // 'unlink' command - unlink package globally
+                // 'unlink' command - unlink package globally OR unlink global package from project
                 .command({
                     name            : 'unlink',
-                    description     : 'Unlink package globally',
-                    action          : () => this.unlinkPackage()
+                    description     : 'Unlink package globally (no args) or unlink global package from project (with package name)',
+                    
+                    args: [
+                        {
+                            name        : 'package',
+                            required    : false,
+                            description : 'Package name to unlink from global (optional)'
+                        }
+                    ],
+                    
+                    action: (params: any) => this.unlinkPackage(params)
                 })
 
                 // 'list' or 'ls' command - list installed packages
@@ -778,23 +796,25 @@
             }
 
             /**
-             * Link package globally
+             * Link package globally or link global package to project
              */
-            private linkPackage() {
+            private linkPackage(params?: any) {
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
-                this.pm!.link();
+                const packageName = params?.args?.package;
+                this.pm!.link(packageName);
             }
 
             /**
-             * Unlink package globally
+             * Unlink package globally or unlink global package from project
              */
-            private unlinkPackage() {
+            private unlinkPackage(params?: any) {
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
-                this.pm!.unlink();
+                const packageName = params?.args?.package;
+                this.pm!.unlink(packageName);
             }
 
             /**

@@ -41,25 +41,37 @@
 
             // Install packages
             install(packages?: string[], options?: { dev?: boolean; global?: boolean }): void {
-                const args = ['install'];
+                const args: string[] = [];
 
-                if (packages && packages.length > 0) {
-                    args.push(...packages);
-                }
-
-                if (options?.dev) {
-                    args.push('--dev');
-                }
-
+                // Handle global installations differently
                 if (options?.global) {
-                    args.push('--global');
+                    args.push('install', '--global');
+
+                    if (packages && packages.length > 0) {
+                        args.push(...packages);
+                    } else {
+                        console.error('✘ Please specify packages to install globally');
+                        process.exit(1);
+                    }
+                } else {
+                    args.push('install');
+
+                    if (packages && packages.length > 0) {
+                        args.push(...packages);
+                    }
+
+                    if (options?.dev) {
+                        args.push('--dev');
+                    }
                 }
 
-                console.log(`→ Installing${packages ? ` ${packages.join(', ')}` : ' dependencies'}...`);
+                console.log(`→ Installing${packages ? ` ${packages.join(', ')}` : ' dependencies'}${options?.global ? ' globally' : ''}...`);
                 this.execute(args);
 
-                // Format package.json after install
-                this.format();
+                // Format package.json after install (only for local installs)
+                if (!options?.global) {
+                    this.format();
+                }
             }
 
             /**
@@ -67,33 +79,50 @@
              */
             remove(packages: string[], options?: { global?: boolean }): void {
                 const args = ['remove'];
-                args.push(...packages);
 
                 if (options?.global) {
                     args.push('--global');
                 }
 
-                console.log(`🗑️ Removing ${packages.join(', ')}...`);
+                args.push(...packages);
+
+                console.log(`🗑️ Removing ${packages.join(', ')}${options?.global ? ' globally' : ''}...`);
                 this.execute(args);
 
-                // Format package.json after remove
-                this.format();
+                // Format package.json after remove (only for local removes)
+                if (!options?.global) {
+                    this.format();
+                }
             }
 
             /**
-             * Link package globally
+             * Link package globally or link global package to current project
+             * - No args: Links current package globally (bun link)
+             * - With package name: Links global package to current project (bun link <package>)
              */
-            link(): void {
-                console.log('🔗 Linking package globally...');
-                this.execute(['link']);
+            link(packageName?: string): void {
+                if (packageName) {
+                    console.log(`🔗 Linking global package "${packageName}" to current project...`);
+                    this.execute(['link', packageName]);
+                } else {
+                    console.log('🔗 Linking current package globally...');
+                    this.execute(['link']);
+                }
             }
 
             /**
-             * Unlink package globally
+             * Unlink package globally or unlink global package from current project
+             * - No args: Unlinks current package globally (bun unlink)
+             * - With package name: Unlinks global package from current project (bun unlink <package>)
              */
-            unlink(): void {
-                console.log('🔓 Unlinking package...');
-                this.execute(['unlink']);
+            unlink(packageName?: string): void {
+                if (packageName) {
+                    console.log(`🔓 Unlinking global package "${packageName}" from current project...`);
+                    this.execute(['unlink', packageName]);
+                } else {
+                    console.log('🔓 Unlinking current package globally...');
+                    this.execute(['unlink']);
+                }
             }
 
             /**
