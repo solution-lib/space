@@ -25,7 +25,7 @@
 
     ```bash
     # install via bun or npm
-    bun install -g @solution-lib/space
+    bun install @solution-lib/space -g
 
     # Now use 'space' anywhere
     space --help
