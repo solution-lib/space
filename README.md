@@ -8,7 +8,7 @@
 </div>
 
 <div align="center">
-    <img src="https://img.shields.io/badge/v-0.0.5-black"/>
+    <img src="https://img.shields.io/badge/v-0.0.6-black"/>
     <a href="https://github.com/maysara-elshewehy">
     </a>
     <a href="https://github.com/solution-lib"> <img src="https://img.shields.io/badge/@-solution--lib-black"/> </a>
@@ -36,7 +36,7 @@
     space init
 
     # Or with options
-    space init my-lib --type lib --pm bun --desc "My library"
+    space init my-lib -t lib --pm bun --desc "My library"
 
     # Navigate and setup
     cd my-lib

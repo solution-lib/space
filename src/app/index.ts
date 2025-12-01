@@ -120,7 +120,7 @@
                     options: [
                         {
                             name        : 'type',
-                            flag        : '--type',
+                            flag        : '-t',
                             type        : 'string',
                             required    : false,
                             description : 'Type of space (lib or cli)'
@@ -394,7 +394,7 @@
              */
             private ensureSpace(): boolean {
                 if (!this.spaceManager.isSpace()) {
-                    console.error('✘ Not a space directory. Run "space init <name> --type lib|cli" first.');
+                    console.error('✘ Not a space directory. Run "space init <name> -t lib|cli" first.');
                     return false;
                 }
                 return true;

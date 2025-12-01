@@ -5,7 +5,7 @@
 	"repo"              : {
 		"org"           : "solution-lib",
 		"name"          : "space",
-		"version"       : "0.0.5",
+		"version"       : "0.0.6",
 		"desc"          : "Creates and manages the spaces",
 		"kw"            : ["solution", "space", "framework"],
 		"license"       : "MIT",
