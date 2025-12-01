@@ -3,21 +3,17 @@
 <br>
 <div align="center">
     <p>
-        <img src="./assets/img/logo.png" alt="logo" style="" height="70" />
+        <img src="./assets/img/logo.png" alt="logo" style="" height="80" />
     </p>
 </div>
 
 <div align="center">
-    <img src="https://img.shields.io/badge/v-0.0.4-black"/>
+    <img src="https://img.shields.io/badge/v-0.0.5-black"/>
     <a href="https://github.com/maysara-elshewehy">
     </a>
-    <a href="https://github.com/solution-lib"><img src="https://img.shields.io/badge/🔥-@solution--lib-black"/></a>
+    <a href="https://github.com/solution-lib"> <img src="https://img.shields.io/badge/@-solution--lib-black"/> </a>
 </div>
-
-<div align="center">
-    <img src="./assets/img/line.png" alt="line" style="display: block; margin-top:20px;margin-bottom:20px;width:500px;"/>
-    <br>
-</div>
+<br>
 
 <!-- ╚═════════════════════════════════════════════════════════════════╝ -->
 
@@ -82,57 +78,15 @@
 
     <div align="center"> <img src="./assets/img/line.png" alt="line" style="display: block; margin-top:20px;margin-bottom:20px;width:500px;"/> <br> </div>
 
-- ## Space Types
+- ## Space Types and Examples
 
-    **Library (lib)**
-    ```
-    my-lib/
-    ┣ src/
-    ┃ ┣ ...
-    ┃ ┗ main.ts
-    ┣ test/
-    ┣ dist/
-    ┣ .space
-    ┗ package.json
-    ```
+    > _**[cli](https://github.com/solution-dist/cli)**_
 
-    **CLI Tool (cli)**
-    ```
-    my-cli/
-    ┣ src/
-    ┃ ┣ ...
-    ┃ ┗ main.ts
-    ┣ test/
-    ┣ dist/
-    ┣ .space
-    ┗ package.json
-    ```
+    > _**[lib](https://github.com/solution-dist/lib)**_
 
-    <div align="center"> <img src="./assets/img/line.png" alt="line" style="display: block; margin-top:20px;margin-bottom:20px;width:500px;"/> <br> </div>
+    > _**[server](https://github.com/solution-dist/server)**_
 
-- ## Examples
-
-    **Create and publish a library:**
-    ```bash
-    space init math-utils --type lib --pm bun
-    cd math-utils
-    space install
-    space start            # Build and Start
-    space test             # Run tests
-    space build            # Build for production
-    space link             # Test locally
-    space publish          # Publish to npm
-    ```
-
-    **Create a CLI tool:**
-    ```bash
-    space init my-tool --type cli
-    cd my-tool
-    space i chalk inquirer  # Add dependencies
-    space start             # Test your CLI
-    space link              # Make it global
-    my-tool --help          # Use it!
-    ```
+    > _**[web app](https://github.com/solution-dist/web)**_
 
     <div align="center"> <img src="./assets/img/line.png" alt="line" style="display: block; margin-top:20px;margin-bottom:20px;width:500px;"/> <br> </div>
 
@@ -145,6 +99,7 @@
         "type"              : "cli",
         "template"          : "clean",
         "pm"                : "bun",
+
         "repo"              : {
             "org"           : "solution-lib",
             "name"          : "space",
@@ -156,12 +111,14 @@
             "homepage"      : "https://github.com/solution-lib/space#readme",
             "git_url"       : "git+https://github.com/solution-lib/space.git"
         },
+
         "author"            : {
             "id"            : "maysara-elshewehy",
             "name"          : "Maysara",
             "email"         : "maysara.elshewehy@gmail.com",
             "url"           : "https://github.com/maysara-elshewehy"
         },
+
         "createdAt"         : "2025-11-29T01:22:48.497Z"
     }
     ```

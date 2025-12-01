@@ -28,7 +28,7 @@
                             name            : 'clean',
                             label           : 'Clean Library',
                             description     : 'Zero dependencies - just TypeScript and build tools',
-                            repo            : 'lib-clean',
+                            repo            : 'lib',
                             requiresSetup   : false,
                             ready           : true
                         }
@@ -43,7 +43,7 @@
                             name            : 'clean',
                             label           : 'Clean CLI',
                             description     : 'Comes with @je-es/cli library for quick CLI development',
-                            repo            : 'cli-clean',
+                            repo            : 'cli',
                             deps            : ['@je-es/cli'],
                             requiresSetup   : true,
                             ready           : true
@@ -59,12 +59,27 @@
                             name            : 'clean',
                             label           : 'Clean Server',
                             description     : 'Comes with @je-es/server library for quick server development',
-                            repo            : 'server-clean',
+                            repo            : 'server',
                             deps            : ['@je-es/server'],
                             requiresSetup   : true,
                             ready           : true
                         },
+                    ]
+                },
 
+                web: {
+                    type                    : 'web',
+                    defaultTemplate         : 'clean',
+                    templates               : [
+                        {
+                            name            : 'clean',
+                            label           : 'Clean Web App',
+                            description     : 'Comes with @je-es/server and @je-es/client libs for quick web development',
+                            repo            : 'web',
+                            deps            : ['@je-es/server', '@je-es/client'],
+                            requiresSetup   : true,
+                            ready           : true
+                        },
                     ]
                 }
 

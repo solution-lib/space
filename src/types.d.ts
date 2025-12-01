@@ -22,7 +22,7 @@
         templates       : TemplateConfig[];
     }
 
-    export type SpaceType       = 'lib'  | 'cli'   | 'server';
+    export type SpaceType       = 'lib' | 'cli' | 'server' | 'web';
     export type TemplateVariant = 'clean';
 
 

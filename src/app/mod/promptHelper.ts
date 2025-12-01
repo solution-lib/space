@@ -94,6 +94,7 @@
                     const libReady = TemplateRegistry.getTemplatesForType('lib', false).length > 0;
                     const cliReady = TemplateRegistry.getTemplatesForType('cli', false).length > 0;
                     const serverReady = TemplateRegistry.getTemplatesForType('server', false).length > 0;
+                    const webReady = TemplateRegistry.getTemplatesForType('web', false).length > 0;
 
                     type = await select({
                         message: 'type:',
@@ -112,6 +113,11 @@
                                 name: `→ Server     - Backend server application${!serverReady ? ' (Coming Soon)' : ''}`,
                                 value: 'server',
                                 disabled: !serverReady ? 'No templates ready yet' : false
+                            },
+                            {
+                                name: `→ Web App    - Full-stack web application${!webReady ? ' (Coming Soon)' : ''}`,
+                                value: 'web',
+                                disabled: !webReady ? 'No templates ready yet' : false
                             }
                         ]
                     });
