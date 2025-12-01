@@ -44,7 +44,7 @@
     space build
     ```
 
-    <div align="center"> <img src="./assets/img/line.png" alt="line" style="display: block; margin-top:20px;margin-bottom:20px;width:500px;"/> <br> </div>
+    <br>
 
 - ## Commands
 
@@ -76,7 +76,7 @@
     space publish                  # Publish to npm (interactive)
     ```
 
-    <div align="center"> <img src="./assets/img/line.png" alt="line" style="display: block; margin-top:20px;margin-bottom:20px;width:500px;"/> <br> </div>
+    <br>
 
 - ## Space Types and Examples
 
@@ -88,7 +88,7 @@
 
     > _**[web app](https://github.com/solution-dist/web)**_
 
-    <div align="center"> <img src="./assets/img/line.png" alt="line" style="display: block; margin-top:20px;margin-bottom:20px;width:500px;"/> <br> </div>
+    <br>
 
 - ## Configuration
 
@@ -125,7 +125,7 @@
 
     > Space automatically uses the correct package manager based on this config.
 
-    <div align="center"> <img src="./assets/img/line.png" alt="line" style="display: block; margin-top:20px;margin-bottom:20px;width:500px;"/> <br> </div>
+    <br>
 
 - ## Documentation
 
