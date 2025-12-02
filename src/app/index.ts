@@ -626,17 +626,17 @@
                         }
                     }
 
-                    // Show info about org detection
-                    if (org) {
-                        console.log(`📦 Detected organization: @${org}`);
-                        console.log(`📝 Package name: ${name}`);
-                    }
+                    // // Show info about org detection
+                    // if (org) {
+                    //     console.log(`― Detected organization: @${org}`);
+                    //     console.log(`― Package name: ${name}`);
+                    // }
 
-                    // Show template info
-                    const templateInfo = TemplateRegistry.getTemplate(answers.type as any, answers.template as any);
-                    if (templateInfo?.deps) {
-                        console.log(`📦 Includes: ${templateInfo.deps.join(', ')}`);
-                    }
+                    // // Show template info
+                    // const templateInfo = TemplateRegistry.getTemplate(answers.type as any, answers.template as any);
+                    // if (templateInfo?.deps) {
+                    //     console.log(`― Includes: ${templateInfo.deps.join(', ')}`);
+                    // }
 
                     await this.spaceManager.createSpace({
                         type            : answers.type as any,
