@@ -1,7 +1,13 @@
 // src/app/mod/jsonFormatter.ts
 //
 // Developed with ❤️ by Maysara.
-// JSON formatter with tab indentation and aligned colons
+
+
+// ╔════════════════════════════════════════ TYPE ════════════════════════════════════════╗
+
+    import * as fs from 'fs';
+
+// ╚══════════════════════════════════════════════════════════════════════════════════════╝
 
 
 
@@ -21,8 +27,8 @@
         'description',
         'keywords',
         'license',
-        'homepage',        // NEW
-        'bugs',            // NEW
+        'homepage',
+        'bugs',
         'author',
         'repository',
         'type',
@@ -55,9 +61,9 @@
         'desc',
         'kw',
         'license',
-        'issues',      // NEW
-        'homepage',    // NEW
-        'git_url'      // NEW
+        'issues',
+        'homepage',
+        'git_url'
     ];
 
     // For nested objects in author
@@ -67,6 +73,12 @@
         'email',
         'url'
     ];
+
+    type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
+    interface JsonObject {
+        [key: string]: JsonValue;
+    }
+    type JsonArray = JsonValue[];
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
 
@@ -79,7 +91,7 @@
         // ┌──────────────────────────────── MAIN ──────────────────────────────┐
 
             // Format JSON with custom alignment and indentation
-            static format(obj: any, options: FormatOptions = {}): string {
+            static format(obj: JsonValue, options: FormatOptions = {}): string {
                 const indent = options.indent || '\t';
                 const alignColons = options.alignColons !== false;
                 const sortKeys = options.sortKeys || false;
@@ -98,9 +110,8 @@
 
             // Format and write to file
             static formatFile(filePath: string, options: FormatOptions = {}): void {
-                const fs = require('fs');
                 const content = fs.readFileSync(filePath, 'utf-8');
-                const obj = JSON.parse(content);
+                const obj = JSON.parse(content) as JsonValue;
                 const formatted = this.format(obj, options);
                 fs.writeFileSync(filePath, formatted + '\n', 'utf-8');
             }
@@ -111,7 +122,7 @@
         // ┌──────────────────────────────── HELP ──────────────────────────────┐
 
             // Calculate the maximum nesting depth
-            private static calculateMaxDepth(obj: any, currentDepth: number = 0): number {
+            private static calculateMaxDepth(obj: JsonValue, currentDepth: number = 0): number {
                 if (!obj || typeof obj !== 'object') {
                     return currentDepth;
                 }
@@ -162,10 +173,11 @@
                 // Return ordered keys first, then unordered
                 return [...orderedKeys, ...unorderedKeys];
             }
-            private static calculateGlobalMaxKeyLength(obj: any): number {
+
+            private static calculateGlobalMaxKeyLength(obj: JsonValue): number {
                 let maxLength = 0;
 
-                const traverse = (value: any) => {
+                const traverse = (value: JsonValue): void => {
                     if (!value || typeof value !== 'object') {
                         return;
                     }
@@ -192,7 +204,7 @@
 
             // Format any JSON value recursively
             private static formatValue(
-                value: any,
+                value: JsonValue,
                 depth: number,
                 indent: string,
                 alignColons: boolean,
@@ -220,7 +232,7 @@
                 }
 
                 if (type === 'object') {
-                    return this.formatObject(value, depth, indent, alignColons, sortKeys, globalMaxKeyLength, maxIndentWidth, tabWidth, keyOrder);
+                    return this.formatObject(value as JsonObject, depth, indent, alignColons, sortKeys, globalMaxKeyLength, maxIndentWidth, tabWidth, keyOrder);
                 }
 
                 return JSON.stringify(value);
@@ -228,7 +240,7 @@
 
             // Format an array
             private static formatArray(
-                arr: any[],
+                arr: JsonArray,
                 depth: number,
                 indent: string,
                 alignColons: boolean,
@@ -264,7 +276,7 @@
 
             // Format an object with GLOBAL alignment accounting for indentation
             private static formatObject(
-                obj: any,
+                obj: JsonObject,
                 depth: number,
                 indent: string,
                 alignColons: boolean,

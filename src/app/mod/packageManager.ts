@@ -1,15 +1,15 @@
 // src/app/mod/packageManager.ts
 //
 // Developed with ❤️ by Maysara.
-// Simplified: Uses Bun for all operations, npm only for publishing
 
 
 
 // ╔════════════════════════════════════════ PACK ════════════════════════════════════════╗
 
-    import { JsonFormatter, PACKAGE_JSON_KEY_ORDER } from './jsonFormatter';
-    import * as path from 'path';
-    import * as fs from 'fs';
+    import { JsonFormatter, PACKAGE_JSON_KEY_ORDER }    from './jsonFormatter';
+    import { Loader }                                   from './loader';
+    import * as path                                    from 'path';
+    import * as fs                                      from 'fs';
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
 
@@ -21,13 +21,14 @@
 
         // ┌──────────────────────────────── INIT ──────────────────────────────┐
 
-            // Always use bun
-            private readonly pm = 'bun';
+            // // Always use bun
+            // private readonly pm = 'bun';
 
             // Default scripts
             private readonly DEFAULT_SCRIPTS = {
                 build: 'tsup',
                 test: 'test',
+                lint: 'eslint src --ext .ts',
             };
 
             constructor() {
@@ -227,7 +228,7 @@
             /**
              * Publish package (uses bun for publishing - simpler and more reliable)
              */
-            publish(options?: { tag?: string; access?: 'public' | 'restricted' }, loader?: any): void {
+            publish(options?: { tag?: string; access?: 'public' | 'restricted' }, loader?: Loader): void {
                 // Publish with bun (more reliable than npm)
                 const args = ['publish'];
                 if (options?.tag) {
@@ -337,7 +338,7 @@
                     if (fs.existsSync(pkgPath)) {
                         JsonFormatter.formatFile(pkgPath, { keyOrder: PACKAGE_JSON_KEY_ORDER });
                     }
-                } catch (error) {
+                } catch {
                     // Silently ignore formatting errors
                 }
             }
@@ -357,7 +358,7 @@
                         if (pkg.scripts && pkg.scripts[script]) {
                             return pkg.scripts[script];
                         }
-                    } catch (error) {
+                    } catch {
                         // If can't read package.json, fall through to defaults
                     }
                 }
@@ -384,7 +385,7 @@
                         if (pkg.scripts && pkg.scripts[script]) {
                             return false;
                         }
-                    } catch (error) {
+                    } catch {
                         // If can't read, assume using default
                     }
                 }

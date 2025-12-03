@@ -7,66 +7,14 @@
 // ╔════════════════════════════════════════ PACK ════════════════════════════════════════╗
 
     import { cli }                          from '@je-es/cli';
-    import { AppConfig, InitCommandParams } from "../types.d";
+    import * as types                       from "../types.d";
     import { SpaceManager }                 from './mod/spaceManager';
     import { PackageManagerWrapper }        from './mod/packageManager';
     import { PromptHelper }                 from './mod/promptHelper';
+    import { Loader }                       from './mod/loader';
     import { spawnSync }                    from 'child_process';
     import * as path                        from 'path';
     import * as fs                          from 'fs';
-
-// ╚══════════════════════════════════════════════════════════════════════════════════════╝
-
-
-
-// ╔════════════════════════════════════════ LOADER ════════════════════════════════════════╗
-
-    class Loader {
-
-        // ┌──────────────────────────────── INIT ──────────────────────────────┐
-
-            private frames: string[] = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-            private currentFrame: number = 0;
-            private interval: NodeJS.Timeout | null = null;
-
-        // └────────────────────────────────────────────────────────────────────┘
-
-
-        // ┌──────────────────────────────── MAIN ──────────────────────────────┐
-
-            start(message: string): void {
-                process.stdout.write(`\n${message}`);
-                this.interval = setInterval(() => {
-                    process.stdout.write(`\r${this.frames[this.currentFrame]} ${message}`);
-                    this.currentFrame = (this.currentFrame + 1) % this.frames.length;
-                }, 80);
-            }
-
-            stop(successMessage: string): void {
-                if (this.interval) {
-                    clearInterval(this.interval);
-                    this.interval = null;
-                }
-
-                if (successMessage === '') {
-                    // Clear the current line and move cursor up to remove the loader completely
-                    process.stdout.write('\r\x1b[K\x1b[1A\x1b[K');
-                } else {
-                    process.stdout.write(`\r${successMessage}                          \n\n`);
-                }
-            }
-
-            stopWithError(errorMessage: string): void {
-                if (this.interval) {
-                    clearInterval(this.interval);
-                    this.interval = null;
-                }
-                process.stdout.write(`\r✘ ${errorMessage}                          \n\n`);
-            }
-
-        // └────────────────────────────────────────────────────────────────────┘
-
-    }
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
 
@@ -82,7 +30,7 @@
             private pm              : PackageManagerWrapper | null = null;
 
             constructor(
-                public config       : AppConfig
+                public config       : types.AppConfig
             ) {
                 this.spaceManager   = new SpaceManager();
                 this.initPackageManager();
@@ -93,7 +41,7 @@
 
         // ┌──────────────────────────────── MAIN ──────────────────────────────┐
 
-            static create(config: AppConfig): App {
+            static create(config: types.AppConfig): App {
                 return new App(config);
             }
 
@@ -134,7 +82,26 @@
                         }
                     ],
 
-                    action: (params: InitCommandParams) => this.createNewSpaceOnGroundViaCLI(params)
+                    action: (params: types.InitCommandParams) => this.createNewSpaceOnGroundViaCLI(params)
+                })
+
+
+                // 'lint' command - run linter
+                .command({
+                    name            : 'lint',
+                    description     : 'Run linter for the current space',
+
+                    options: [
+                        {
+                            name        : 'fix',
+                            flag        : '--fix',
+                            type        : 'boolean',
+                            required    : false,
+                            description : 'Automatically fix linting issues'
+                        }
+                    ],
+
+                    action: (params: types.LintParams) => this.runLint(params)
                 })
 
                 // 'info' command - show space information
@@ -177,7 +144,7 @@
                         }
                     ],
 
-                    action: (params: any) => this.installPackages(params)
+                    action: (params: types.InstallParams) => this.installPackages(params)
                 })
 
                 // 'remove' or 'r' command - remove packages
@@ -204,7 +171,7 @@
                         }
                     ],
 
-                    action: (params: any) => this.removePackages(params)
+                    action: (params: types.RemoveParams) => this.removePackages(params)
                 })
 
                 // 'update' or 'up' command - update packages
@@ -221,14 +188,14 @@
                         }
                     ],
 
-                    action: (params: any) => this.updatePackages(params)
+                    action: (params: types.UpdateParams) => this.updatePackages(params)
                 })
 
                 // 'link' command - link package globally OR link global package to project
                 .command({
                     name            : 'link',
                     description     : 'Link package globally (no args) or link global package to project (with package name)',
-                    
+
                     args: [
                         {
                             name        : 'package',
@@ -236,15 +203,15 @@
                             description : 'Package name to link from global (optional)'
                         }
                     ],
-                    
-                    action: (params: any) => this.linkPackage(params)
+
+                    action: (params: types.LinkParams) => this.linkPackage(params)
                 })
 
                 // 'unlink' command - unlink package globally OR unlink global package from project
                 .command({
                     name            : 'unlink',
                     description     : 'Unlink package globally (no args) or unlink global package from project (with package name)',
-                    
+
                     args: [
                         {
                             name        : 'package',
@@ -252,8 +219,8 @@
                             description : 'Package name to unlink from global (optional)'
                         }
                     ],
-                    
-                    action: (params: any) => this.unlinkPackage(params)
+
+                    action: (params: types.LinkParams) => this.unlinkPackage(params)
                 })
 
                 // 'list' or 'ls' command - list installed packages
@@ -272,7 +239,7 @@
                         }
                     ],
 
-                    action: (params: any) => this.listPackages(params)
+                    action: (params: types.ListParams) => this.listPackages(params)
                 })
 
                 // ═══════════════════════════ BUILD & TEST COMMANDS ═══════════════════════════
@@ -356,7 +323,7 @@
                         }
                     ],
 
-                    action: (params: any) => this.runTests(params)
+                    action: (params: types.TestParams) => this.runTests(params)
                 })
 
                 // 'run' command - run any script from package.json
@@ -375,7 +342,7 @@
                     allowDynamicArgs    : true,    // Allow additional arguments
                     allowDynamicOptions : true,    // Allow additional options
 
-                    action: (params: any) => this.runScript(params)
+                    action: (params: types.RunScriptParams) => this.runScript(params)
                 })
 
                 // 'clean' command - clean build artifacts
@@ -391,7 +358,7 @@
                     description         : 'Start the main file',
                     allowDynamicArgs    : true,    // Allow any arguments to pass through
                     allowDynamicOptions : true,    // Allow any options to pass through
-                    action              : (params: any) => this.startMain(params)
+                    action              : (params: types.StartParams) => this.startMain(params)
                 })
 
                 // ═══════════════════════════ PUBLISH COMMAND ═══════════════════════════
@@ -418,7 +385,7 @@
                         }
                     ],
 
-                    action: (params: any) => this.publish(params)
+                    action: (params: types.PublishParams) => this.publish(params)
                 })
 
                 // Build and run CLI
@@ -430,7 +397,7 @@
 
         // ┌──────────────────────────────── HELP ──────────────────────────────┐
 
-            static defaultConfig(): AppConfig {
+            static defaultConfig(): types.AppConfig {
                 return {
                     name    : 'Space',
                     version : '0.0.1',
@@ -495,7 +462,7 @@
                         if (!fs.existsSync(dirPath)) {
                             return; // Success!
                         }
-                    } catch (error: any) {
+                    } catch (error: unknown) {
                         if (i === maxRetries - 1) {
                             // Last attempt failed
                             throw error;
@@ -517,7 +484,7 @@
             /**
              * Create a new space via CLI
              */
-            private async createNewSpaceOnGroundViaCLI(params: InitCommandParams) {
+            private async createNewSpaceOnGroundViaCLI(params: types.InitCommandParams) {
                 try {
                     // Prompt for missing parameters
                     const answers = await PromptHelper.promptInit({
@@ -540,13 +507,13 @@
 
                     // Validate template
                     const { TemplateRegistry } = await import('./mod/templateRegistry');
-                    if (!TemplateRegistry.isValidTemplate(answers.type as any, answers.template as any)) {
+                    if (!TemplateRegistry.isValidTemplate(answers.type, answers.template as types.TemplateVariant)) {
                         PromptHelper.showError('Invalid template for this space type.');
                         process.exit(1);
                     }
 
                     // Check if template is ready
-                    if (!TemplateRegistry.isTemplateReady(answers.type as any, answers.template as any)) {
+                    if (!TemplateRegistry.isTemplateReady(answers.type, answers.template as types.TemplateVariant)) {
                         PromptHelper.showError('This template is not ready yet. Please choose another template.');
                         process.exit(1);
                     }
@@ -601,27 +568,35 @@
                         // Delete the directory with retry logic
                         try {
                             await this.deleteDirectoryWithRetry(spacePath);
-                        } catch (error: any) {
-                            const isLockError = error.message &&
-                                (error.message.includes('EBUSY') ||
-                                error.message.includes('EPERM') ||
-                                error.message.includes('resource busy'));
+                        } catch (error: unknown) {
+                            if (error instanceof Error) {
+                                const isLockError = error.message &&
+                                    (error.message.includes('EBUSY') ||
+                                    error.message.includes('EPERM') ||
+                                    error.message.includes('resource busy'));
 
-                            if (isLockError) {
-                                PromptHelper.showError(
-                                    `Cannot delete directory - it's being used by another program.\n\n` +
-                                    `Please try:\n` +
-                                    `  1. Close any terminals/editors with "${spacePath}" open\n` +
-                                    `  2. Navigate out of the directory in all terminals\n` +
-                                    `  3. Run PowerShell/Terminal as Administrator\n` +
-                                    `  4. Wait a few seconds and try again`
-                                );
+                                if (isLockError) {
+                                    PromptHelper.showError(
+                                        `Cannot delete directory - it's being used by another program.\n\n` +
+                                        `Please try:\n` +
+                                        `  1. Close any terminals/editors with "${spacePath}" open\n` +
+                                        `  2. Navigate out of the directory in all terminals\n` +
+                                        `  3. Run PowerShell/Terminal as Administrator\n` +
+                                        `  4. Wait a few seconds and try again`
+                                    );
+                                } else {
+                                    PromptHelper.showError(
+                                        `Failed to delete existing directory.`,
+                                        error
+                                    );
+                                }
                             } else {
                                 PromptHelper.showError(
                                     `Failed to delete existing directory.`,
-                                    error
+                                    new Error('Unknown error')
                                 );
                             }
+
                             process.exit(1);
                         }
                     }
@@ -633,14 +608,14 @@
                     // }
 
                     // // Show template info
-                    // const templateInfo = TemplateRegistry.getTemplate(answers.type as any, answers.template as any);
+                    // const templateInfo = TemplateRegistry.getTemplate(answers.type, answers.template);
                     // if (templateInfo?.deps) {
                     //     console.log(`― Includes: ${templateInfo.deps.join(', ')}`);
                     // }
 
                     await this.spaceManager.createSpace({
-                        type            : answers.type as any,
-                        template        : answers.template as any,
+                        type            : answers.type,
+                        template        : answers.template as types.TemplateVariant,
                         pm              : 'bun', // Always use bun
 
                         repo           : {
@@ -710,7 +685,7 @@
                     let keywords: string[] = [];
 
                     if (Array.isArray(config.repo.kw)) {
-                        keywords = config.repo.kw.filter((k: any) =>
+                        keywords = config.repo.kw.filter((k: unknown) =>
                             k &&
                             typeof k === 'string' &&
                             k.trim() !== '' &&
@@ -754,6 +729,28 @@
                 console.log('');
             }
 
+            /**
+             * Run linter
+             */
+            private runLint(params?: types.LintParams) {
+                if (!this.ensureSpace()) return;
+                if (!this.pm) this.initPackageManager();
+
+                const args: string[] = [];
+
+                // Add --fix flag if specified
+                if (params?.options?.fix) {
+                    args.push('--fix');
+                }
+
+                // Run lint with args
+                if (args.length > 0) {
+                    this.pm!.run('lint', args);
+                } else {
+                    this.pm!.run('lint');
+                }
+            }
+
         // └────────────────────────────────────────────────────────────────────┘
 
 
@@ -762,16 +759,16 @@
             /**
              * Install packages
              */
-            private async installPackages(params: any) {
+            private async installPackages(params: types.InstallParams) {
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
                 try {
-                    let packages = params.args.packages
+                    let packages = params.args?.packages
                         ? params.args.packages.split(' ').filter((p: string) => p.trim())
                         : undefined;
 
-                    let isDev = params.options.dev || false;
+                    let isDev = params.options?.dev || false;
 
                     // If no packages provided, prompt
                     if (!packages || packages.length === 0) {
@@ -789,7 +786,7 @@
 
                     this.pm!.install(packages, {
                         dev: isDev,
-                        global: params.options.global
+                        global: params.options?.global
                     });
                 } catch (error) {
                     PromptHelper.showError('✘ Installation failed', error as Error);
@@ -800,14 +797,14 @@
             /**
              * Remove packages
              */
-            private async removePackages(params: any) {
+            private async removePackages(params: types.RemoveParams) {
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
                 try {
-                    const packages = params.args.packages.split(' ').filter((p: string) => p.trim());
+                    const packages = params.args?.packages.split(' ').filter((p: string) => p.trim());
 
-                    if (packages.length === 0) {
+                    if (!packages || packages.length === 0) {
                         PromptHelper.showError('Please specify packages to remove');
                         return;
                     }
@@ -821,7 +818,7 @@
                     }
 
                     this.pm!.remove(packages, {
-                        global: params.options.global
+                        global: params.options?.global
                     });
                 } catch (error) {
                     PromptHelper.showError('✘ Removal failed', error as Error);
@@ -832,12 +829,12 @@
             /**
              * Update packages
              */
-            private async updatePackages(params: any) {
+            private async updatePackages(params: types.UpdateParams) {
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
                 try {
-                    let packages = params.args.packages
+                    let packages = params.args?.packages
                         ? params.args.packages.split(' ').filter((p: string) => p.trim())
                         : undefined;
 
@@ -857,7 +854,7 @@
             /**
              * Link package globally or link global package to project
              */
-            private linkPackage(params?: any) {
+            private linkPackage(params?: types.LinkParams) {
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
@@ -868,7 +865,7 @@
             /**
              * Unlink package globally or unlink global package from project
              */
-            private unlinkPackage(params?: any) {
+            private unlinkPackage(params?: types.LinkParams) {
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
@@ -879,19 +876,19 @@
             /**
              * List packages
              */
-            private listPackages(params: any) {
+            private listPackages(params: types.ListParams) {
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
                 this.pm!.list({
-                    global: params.options.global
+                    global: params.options?.global ?? false
                 });
             }
 
             /**
              * Run any script from package.json
              */
-            private runScript(params: any) {
+            private runScript(params: types.RunScriptParams) {
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
@@ -904,7 +901,7 @@
 
                 try {
                     // Collect dynamic args and options
-                    let args: string[] = [];
+                    const args: string[] = [];
 
                     if (params?.dynamicArgs && Array.isArray(params.dynamicArgs)) {
                         args.push(...params.dynamicArgs);
@@ -945,7 +942,7 @@
                 try {
                     this.pm!.runSilent('build');
                     loader.stop(silently ? '' : '✔ Build succeeded');
-                } catch (error) {
+                } catch {
                     loader.stopWithError('✘ Build failed');
                     process.exit(1);
                 }
@@ -961,17 +958,17 @@
                 try {
                     this.pm!.runSilent('build');
                     loader.stop(silently ? '' : '✔ Build succeeded');
-                    return true
-                } catch (error) {
+                    return true;
+                } catch {
                     loader.stopWithError('✘ Build failed!');
-                    return false
+                    return false;
                 }
             }
 
             /**
              * Run tests
              */
-            private runTests(params?: any) {
+            private runTests(params?: types.TestParams) {
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
@@ -1045,7 +1042,7 @@
                 try {
                     this.pm!.run('clean');
                     loader.stop('✔ Clean complete!');
-                } catch (error) {
+                } catch {
                     loader.stopWithError('✘ Clean failed!');
                     process.exit(1);
                 }
@@ -1054,7 +1051,7 @@
             /**
              * Start the main file - builds silently first, then runs
              */
-            private startMain(params?: any) {
+            private startMain(params?: types.StartParams) {
                 if (!this.buildSpaceBool(true)) return;
 
                 try {
@@ -1070,7 +1067,7 @@
                     }
 
                     // Step 2: Collect ALL arguments (dynamic args from CLI)
-                    let args: string[] = [];
+                    const args: string[] = [];
 
                     // Get dynamic args (all unnamed args passed after 'start')
                     if (params?.dynamicArgs && Array.isArray(params.dynamicArgs)) {
@@ -1142,7 +1139,7 @@
                             return packageJson.main;
                         }
                     }
-                } catch (error) {
+                } catch {
                     // Ignore package.json errors
                 }
 
@@ -1152,7 +1149,7 @@
             /**
              * Publish to npm
              */
-            private async publish(params: any) {
+            private async publish(params: types.PublishParams) {
                 if(!this.buildSpaceBool(true)) return;
                 try {
                     const config = this.spaceManager.loadSpaceConfig();
@@ -1166,8 +1163,8 @@
                         : config.repo.name;
 
                     // Prompt for publish options if not provided
-                    let tag     = params.options.tag;
-                    let access  = params.options.access;
+                    let tag     = params.options?.tag     || undefined;
+                    let access  = params.options?.access  || undefined;
 
                     if (!tag && !access) {
                         const publishAnswers = await PromptHelper.promptPublish(fullName);
@@ -1186,7 +1183,7 @@
 
                     this.pm!.publish({
                         tag,
-                        access: access as any
+                        access: access as types.PublishAccess
                     }, loader);
                 } catch (error) {
                     PromptHelper.showError('Publish failed', error as Error);

@@ -63,7 +63,7 @@
                         try {
                             // Try to clean up, but don't fail if we can't
                             await this.safeDeleteDirectory(targetPath);
-                        } catch (cleanupError) {
+                        } catch {
                             // Ignore cleanup errors
                             console.warn(`Warning: Could not clean up directory at "${targetPath}"`);
                         }
@@ -124,16 +124,20 @@
                     // Update files with project info
                     await this.updateTemplateFiles(targetPath, config);
 
-                } catch (error: any) {
+                } catch (e: unknown) {
                     // Check if it's a "repository not found" error
-                    if (error.message && error.message.includes('Repository not found')) {
-                        throw new Error(
-                            `Template repository not found: ${repoUrl}\n` +
-                            `This template is not yet available. Please mark it as ready: false in templateRegistry.ts`
-                        );
-                    }
+                    if(e instanceof Error) {
+                        if (e.message && e.message.includes('Repository not found')) {
+                            throw new Error(
+                                `Template repository not found: ${repoUrl}\n` +
+                                `This template is not yet available. Please mark it as ready: false in templateRegistry.ts`
+                            );
+                        }
 
-                    throw new Error(`Failed to clone template from ${repoUrl}: ${error.message || error}`);
+                        throw new Error(`Failed to clone template from ${repoUrl}: ${e.message || e}`);
+                    } else {
+                        throw new Error(`Failed to clone template from ${repoUrl}: ${e}`);
+                    }
                 }
             }
 
@@ -196,11 +200,11 @@
 
                     try {
                         let content = fs.readFileSync(filePath, 'utf-8');
-                        let hasChanges = false;
+                        // let hasChanges = false;
 
                         // STEP 1: Replace template variables in the raw content first
                         if (content.includes('{{')) {
-                            hasChanges = true;
+                            // hasChanges = true;
 
                             // Replace all placeholders
                             content = content
@@ -320,7 +324,7 @@
                             continue; // Skip the rest of the loop for package.json
                         }
 
-                    } catch (error) {
+                    } catch {
                         // Silently skip files that can't be read/updated (like binaries)
                         continue;
                     }

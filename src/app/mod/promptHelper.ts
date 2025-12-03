@@ -6,9 +6,9 @@
 
 // ╔════════════════════════════════════════ PACK ════════════════════════════════════════╗
 
-    import { input, select, confirm } from '@inquirer/prompts';
-    import { TemplateRegistry } from './templateRegistry';
-    import type { SpaceType, TemplateVariant } from '../../types.d';
+    import { input, select, confirm }   from '@inquirer/prompts';
+    import { TemplateRegistry }         from './templateRegistry';
+    import type { SpaceType }           from '../../types.d';
 
 // ╚══════════════════════════════════════════════════════════════════════════════════════╝
 
@@ -396,7 +396,7 @@
              */
             static showSuccess(spaceName: string, nextSteps: string[]) {
                 console.log('');
-                nextSteps.forEach((step, index) => {
+                nextSteps.forEach((step) => {
                     console.log(`→ ${step}`);
                 });
                 console.log('');

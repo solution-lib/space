@@ -13,7 +13,7 @@
         repo            : string;
         deps?           : string[];
         requiresSetup   : boolean;
-        ready           : boolean;  // NEW: indicates if template is implemented
+        ready           : boolean;
     }
 
     export interface SpaceTypeConfig {
@@ -46,9 +46,9 @@
             desc?       : string;
             kw?         : string[];
             license?    : string;
-            issues?     : string;      // NEW
-            homepage?   : string;      // NEW
-            git_url?    : string;      // NEW
+            issues?     : string;
+            homepage?   : string;
+            git_url?    : string;
         };
 
         author          : {
@@ -70,6 +70,120 @@
             desc?       : string;
             pm?         : string;
             template?   : string;
+        };
+    }
+
+        export interface CommandParams {
+        args?: {
+            [key: string]: string | undefined;
+            name?: string;
+            packages?: string;
+            package?: string;
+            script?: string;
+            path?: string;
+        };
+        options?: {
+            [key: string]: boolean | string | undefined;
+            fix?: boolean;
+            dev?: boolean;
+            global?: boolean;
+            coverage?: boolean;
+            watch?: boolean;
+            bail?: boolean;
+            timeout?: string;
+            'rerun-each'?: string;
+            concurrent?: boolean;
+            'coverage-reporter'?: string;
+            'test-name-pattern'?: string;
+            type?: string;
+            desc?: string;
+            pm?: string;
+            template?: string;
+            tag?: string;
+            access?: string;
+        };
+        dynamicArgs?: string[];
+        dynamicOptions?: Record<string, string | boolean>;
+    }
+
+    export interface LintParams extends CommandParams {
+        options?: {
+            fix?: boolean;
+        };
+    }
+
+    export interface InstallParams extends CommandParams {
+        args?: {
+            packages?: string;
+        };
+        options?: {
+            dev?: boolean;
+            global?: boolean;
+        };
+    }
+
+    export interface RemoveParams extends CommandParams {
+        args?: {
+            packages: string;
+        };
+        options?: {
+            global?: boolean;
+        };
+    }
+
+    export interface UpdateParams extends CommandParams {
+        args?: {
+            packages?: string;
+        };
+    }
+
+    export interface LinkParams extends CommandParams {
+        args?: {
+            package?: string;
+        };
+    }
+
+    export interface ListParams extends CommandParams {
+        options?: {
+            global?: boolean;
+        };
+    }
+
+    export interface TestParams extends CommandParams {
+        args?: {
+            path?: string;
+        };
+        options?: {
+            coverage?: boolean;
+            'coverage-reporter'?: string;
+            watch?: boolean;
+            bail?: boolean;
+            timeout?: string;
+            'rerun-each'?: string;
+            concurrent?: boolean;
+            'test-name-pattern'?: string;
+        };
+    }
+
+    export interface RunScriptParams extends CommandParams {
+        args?: {
+            script: string;
+        };
+        dynamicArgs?: string[];
+        dynamicOptions?: Record<string, string | boolean>;
+    }
+
+    export interface StartParams extends CommandParams {
+        dynamicArgs?: string[];
+        dynamicOptions?: Record<string, string | boolean>;
+    }
+
+    export type PublishAccess = 'public' | 'restricted';
+
+    export interface PublishParams extends CommandParams {
+        options?: {
+            tag?: string;
+            access?: PublishAccess;
         };
     }
 

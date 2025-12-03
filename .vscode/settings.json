@@ -5,7 +5,6 @@
         "**/.hg": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-        "eslint.config.mjs": true,
         "bun.lock": true,
         "LICENSE": true,
         ".gitignore": true,
@@ -17,7 +16,6 @@
         "tsup.config.ts": true
     },
     "hide-files.files": [
-        "eslint.config.mjs",
         "bun.lock",
         "LICENSE",
         ".gitignore",
