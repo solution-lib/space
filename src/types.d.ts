@@ -2,7 +2,7 @@
 //
 // Template configuration types with 'ready' status
 
-
+import type { ParsedCommand } from '@je-es/cli';
 
 // ╔════════════════════════════════════════ TYPE ════════════════════════════════════════╗
 
@@ -61,99 +61,74 @@
         createdAt       : string;
     }
 
-    export interface InitCommandParams {
-        args            : {
-            name        : string;
-        };
-        options         : {
-            type?       : string;
-            desc?       : string;
-            pm?         : string;
-            template?   : string;
-        };
-    }
-
-        export interface CommandParams {
-        args?: {
-            [key: string]: string | undefined;
-            name?: string;
-            packages?: string;
-            package?: string;
-            script?: string;
-            path?: string;
-        };
-        options?: {
-            [key: string]: boolean | string | undefined;
-            fix?: boolean;
-            dev?: boolean;
-            global?: boolean;
-            coverage?: boolean;
-            watch?: boolean;
-            bail?: boolean;
-            timeout?: string;
-            'rerun-each'?: string;
-            concurrent?: boolean;
-            'coverage-reporter'?: string;
-            'test-name-pattern'?: string;
-            type?: string;
-            desc?: string;
-            pm?: string;
-            template?: string;
-            tag?: string;
-            access?: string;
-        };
+    // Base interface that extends ParsedCommand
+    export interface CommandParams extends ParsedCommand {
+        args: ParsedCommand['args'];
+        options: ParsedCommand['options'];
         dynamicArgs?: string[];
         dynamicOptions?: Record<string, string | boolean>;
     }
 
+    export interface InitCommandParams extends CommandParams {
+        args: ParsedCommand['args'] & {
+            name?: string;  // Made optional
+        };
+        options: ParsedCommand['options'] & {
+            type?: string;
+            desc?: string;
+            pm?: string;
+            template?: string;
+        };
+    }
+
     export interface LintParams extends CommandParams {
-        options?: {
+        options: ParsedCommand['options'] & {
             fix?: boolean;
         };
     }
 
     export interface InstallParams extends CommandParams {
-        args?: {
+        args: ParsedCommand['args'] & {
             packages?: string;
         };
-        options?: {
+        options: ParsedCommand['options'] & {
             dev?: boolean;
             global?: boolean;
         };
     }
 
     export interface RemoveParams extends CommandParams {
-        args?: {
-            packages: string;
+        args: ParsedCommand['args'] & {
+            packages?: string;  // Made optional
         };
-        options?: {
+        options: ParsedCommand['options'] & {
             global?: boolean;
         };
     }
 
     export interface UpdateParams extends CommandParams {
-        args?: {
+        args: ParsedCommand['args'] & {
             packages?: string;
         };
     }
 
     export interface LinkParams extends CommandParams {
-        args?: {
+        args: ParsedCommand['args'] & {
             package?: string;
         };
     }
 
     export interface ListParams extends CommandParams {
-        options?: {
+        options: ParsedCommand['options'] & {
             global?: boolean;
         };
     }
 
     export interface TestParams extends CommandParams {
-        args?: {
+        args: ParsedCommand['args'] & {
             path?: string;
         };
-        options?: {
+        options: ParsedCommand['options'] & {
             coverage?: boolean;
             'coverage-reporter'?: string;
             watch?: boolean;
@@ -166,8 +141,8 @@
     }
 
     export interface RunScriptParams extends CommandParams {
-        args?: {
-            script: string;
+        args: ParsedCommand['args'] & {
+            script?: string;  // Made optional
         };
         dynamicArgs?: string[];
         dynamicOptions?: Record<string, string | boolean>;
@@ -181,7 +156,7 @@
     export type PublishAccess = 'public' | 'restricted';
 
     export interface PublishParams extends CommandParams {
-        options?: {
+        options: ParsedCommand['options'] & {
             tag?: string;
             access?: PublishAccess;
         };

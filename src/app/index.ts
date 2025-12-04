@@ -802,7 +802,7 @@
                 if (!this.pm) this.initPackageManager();
 
                 try {
-                    const packages = params.args?.packages.split(' ').filter((p: string) => p.trim());
+                    const packages = params.args && params.args.packages ? params.args?.packages.split(' ').filter((p: string) => p.trim()) : undefined;
 
                     if (!packages || packages.length === 0) {
                         PromptHelper.showError('Please specify packages to remove');

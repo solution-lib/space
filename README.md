@@ -8,10 +8,11 @@
 </div>
 
 <div align="center">
-    <img src="https://img.shields.io/badge/v-0.1.1-black"/>
+    <img src="https://img.shields.io/badge/v-0.1.2-black"/>
     <a href="https://github.com/solution-lib"> <img src="https://img.shields.io/badge/🔥-@solution--lib-black"/> </a>
     <br>
     <img src="https://github.com/solution-lib/space/actions/workflows/ci.yml/badge.svg" alt="CI" />
+    <img src="https://img.shields.io/badge/coverage-100%25-brightgreen" alt="Test Coverage" />
     <img src="https://img.shields.io/github/issues/solution-lib/space?style=flat" alt="Github Repo Issues" />
     <img src="https://img.shields.io/github/stars/solution-lib/space?style=social" alt="GitHub Repo stars" />
 </div>
