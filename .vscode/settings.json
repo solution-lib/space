@@ -14,7 +14,8 @@
         ".vscode": true,
         "tsconfig.json": true,
         "eslint.config.mjs": true,
-        ".github": true
+        ".github": true,
+        "tsup.config.ts": true
     },
     "hide-files.files": [
         "bun.lock",
@@ -26,6 +27,7 @@
         ".vscode",
         "tsconfig.json",
         "eslint.config.mjs",
-        ".github"
+        ".github",
+        "tsup.config.ts"
     ]
 }
