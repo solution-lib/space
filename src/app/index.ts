@@ -194,13 +194,14 @@
                 // 'link' command - link package globally OR link global package to project
                 .command({
                     name            : 'link',
-                    description     : 'Link package globally (no args) or link global package to project (with package name)',
+                    description     : 'Link package globally (no args) or link global package(s) to project (with package name(s))',
+                    allowDynamicArgs: true,
 
                     args: [
                         {
                             name        : 'package',
                             required    : false,
-                            description : 'Package name to link from global (optional)'
+                            description : 'Package name(s) to link from global (optional, supports multiple)'
                         }
                     ],
 
@@ -210,13 +211,14 @@
                 // 'unlink' command - unlink package globally OR unlink global package from project
                 .command({
                     name            : 'unlink',
-                    description     : 'Unlink package globally (no args) or unlink global package from project (with package name)',
+                    description     : 'Unlink package globally (no args) or unlink global package(s) from project (with package name(s))',
+                    allowDynamicArgs: true,
 
                     args: [
                         {
                             name        : 'package',
                             required    : false,
-                            description : 'Package name to unlink from global (optional)'
+                            description : 'Package name(s) to unlink from global (optional, supports multiple)'
                         }
                     ],
 
@@ -858,8 +860,22 @@
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
-                const packageName = params?.args?.package;
-                this.pm!.link(packageName);
+                // Collect package names from args and dynamicArgs
+                const packages: string[] = [];
+                
+                if (params?.args?.package) {
+                    if (typeof params.args.package === 'string') {
+                        packages.push(params.args.package);
+                    } else if (Array.isArray(params.args.package)) {
+                        packages.push(...params.args.package);
+                    }
+                }
+                
+                if (params?.dynamicArgs && Array.isArray(params.dynamicArgs)) {
+                    packages.push(...params.dynamicArgs);
+                }
+                
+                this.pm!.link(packages.length > 0 ? packages : undefined);
             }
 
             /**
@@ -869,8 +885,22 @@
                 if (!this.ensureSpace()) return;
                 if (!this.pm) this.initPackageManager();
 
-                const packageName = params?.args?.package;
-                this.pm!.unlink(packageName);
+                // Collect package names from args and dynamicArgs
+                const packages: string[] = [];
+                
+                if (params?.args?.package) {
+                    if (typeof params.args.package === 'string') {
+                        packages.push(params.args.package);
+                    } else if (Array.isArray(params.args.package)) {
+                        packages.push(...params.args.package);
+                    }
+                }
+                
+                if (params?.dynamicArgs && Array.isArray(params.dynamicArgs)) {
+                    packages.push(...params.dynamicArgs);
+                }
+                
+                this.pm!.unlink(packages.length > 0 ? packages : undefined);
             }
 
             /**

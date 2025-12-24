@@ -97,14 +97,16 @@
             }
 
             /**
-             * Link package globally or link global package to current project
+             * Link package(s) globally or link global package(s) to current project
              * - No args: Links current package globally (bun link)
-             * - With package name: Links global package to current project (bun link <package>)
+             * - With package name(s): Links global package(s) to current project (bun link <package1> <package2> ...)
              */
-            link(packageName?: string): void {
-                if (packageName) {
-                    console.log(`🔗 Linking global package "${packageName}" to current project...`);
-                    this.execute(['link', packageName]);
+            link(packageNames?: string | string[]): void {
+                if (packageNames) {
+                    const packages = Array.isArray(packageNames) ? packageNames : [packageNames];
+                    const packageList = packages.join(', ');
+                    console.log(`🔗 Linking global package${packages.length > 1 ? 's' : ''} "${packageList}" to current project...`);
+                    this.execute(['link', ...packages]);
                 } else {
                     console.log('🔗 Linking current package globally...');
                     this.execute(['link']);
@@ -112,14 +114,16 @@
             }
 
             /**
-             * Unlink package globally or unlink global package from current project
+             * Unlink package(s) globally or unlink global package(s) from current project
              * - No args: Unlinks current package globally (bun unlink)
-             * - With package name: Unlinks global package from current project (bun unlink <package>)
+             * - With package name(s): Unlinks global package(s) from current project (bun unlink <package1> <package2> ...)
              */
-            unlink(packageName?: string): void {
-                if (packageName) {
-                    console.log(`🔓 Unlinking global package "${packageName}" from current project...`);
-                    this.execute(['unlink', packageName]);
+            unlink(packageNames?: string | string[]): void {
+                if (packageNames) {
+                    const packages = Array.isArray(packageNames) ? packageNames : [packageNames];
+                    const packageList = packages.join(', ');
+                    console.log(`🔓 Unlinking global package${packages.length > 1 ? 's' : ''} "${packageList}" from current project...`);
+                    this.execute(['unlink', ...packages]);
                 } else {
                     console.log('🔓 Unlinking current package globally...');
                     this.execute(['unlink']);
@@ -238,39 +242,22 @@
                 const access = options?.access || 'public';
                 args.push('--access', access);
 
+                // Stop loader before running interactive publish process
+                if (loader) {
+                    loader.stop('');
+                }
+
+                // Use inherit mode to allow interactive authentication
                 const publishProc = Bun.spawnSync(['bun', ...args], {
-                    stdout: 'pipe',
-                    stderr: 'pipe'
+                    stdout: 'inherit',
+                    stderr: 'inherit',
+                    stdin: 'inherit'
                 });
 
                 if (publishProc.exitCode === 0) {
-                    // Extract package name and version from output
-                    const stdout = new TextDecoder().decode(publishProc.stdout);
-                    const versionMatch = stdout.match(/\+ (.+@[\d.]+)/);
-
-                    if (loader) {
-                        if (versionMatch) {
-                            loader.stop(`✔ Published ${versionMatch[1]} successfully!`);
-                        } else {
-                            loader.stop('✔ Published successfully!');
-                        }
-                    } else {
-                        if (versionMatch) {
-                            console.log(`✔ Published ${versionMatch[1]} successfully!`);
-                        } else {
-                            console.log('✔ Published successfully!');
-                        }
-                    }
+                    console.log('✔ Published successfully!');
                 } else {
-                    const stderr = new TextDecoder().decode(publishProc.stderr);
-                    if (loader) {
-                        loader.stopWithError('Publish failed!');
-                    } else {
-                        console.error('Publish failed!');
-                    }
-                    if (stderr) {
-                        console.error(stderr);
-                    }
+                    console.error('✘ Publish failed!');
                     process.exit(1);
                 }
             }

@@ -120,7 +120,7 @@
 
     export interface LinkParams extends CommandParams {
         args: ParsedCommand['args'] & {
-            package?: string;
+            package?: string | string[];
         };
     }
 

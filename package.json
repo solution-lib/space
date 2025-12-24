@@ -1,6 +1,6 @@
 {
 	"name"                             : "@solution-lib/space",
-	"version"                          : "0.1.4",
+	"version"                          : "0.1.6",
 	"description"                      : "Creates and manages the spaces",
 	"keywords"                         : ["solution", "space", "framework"],
 	"license"                          : "MIT",
